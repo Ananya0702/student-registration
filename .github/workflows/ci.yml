@@ -1,0 +1,35 @@
+name: Build & Test Student Registration Webpage
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build-and-test:
+    name: Validate HTML & Run Automated Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python Environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Verify index.html Exists (Build / Sanity Check)
+        run: |
+          echo "Checking file presence..."
+          if [ -f "index.html" ]; then
+            echo "SUCCESS: index.html is present."
+          else
+            echo "ERROR: index.html was not found in the repository root!" >&2
+            exit 1
+          fi
+
+      - name: Run Automated HTML & Element Validation Tests
+        run: |
+          python -m unittest discover -s tests -p "test_*.py" -v
